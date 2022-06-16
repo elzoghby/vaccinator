@@ -352,9 +352,16 @@ class _AddChildState extends State<AddChild> {
                       Padding(
                         padding: const EdgeInsets.all(16.0),
                         child: TextFormField(
-
+                            keyboardType: TextInputType.emailAddress,
                             cursorColor: Colors.black,
-                            decoration: InputDecoration(labelText: name),
+                            validator: (value) {
+                              if (value!.isEmpty ||! value.contains('@')) {
+                                return 'Add a valid email ';
+                              } else {
+                                return null;
+                              }
+                            },
+                            decoration: InputDecoration(labelText: 'email'),
                             onSaved: (value) {
                               address = value!;
                             }),
@@ -363,10 +370,10 @@ class _AddChildState extends State<AddChild> {
                       Padding(
                         padding: const EdgeInsets.all(16.0),
                         child: TextFormField(
-
+                            keyboardType: TextInputType.number,
                             cursorColor: Colors.black,
 
-                            decoration: InputDecoration(labelText: name),
+                            decoration: InputDecoration(labelText: 'phone',),
                             onSaved: (value) {
                               phone = value!;
                             }),

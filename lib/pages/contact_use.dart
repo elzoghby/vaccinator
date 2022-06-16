@@ -59,7 +59,7 @@ class ContactUs extends StatelessWidget {
             ),
             child: TextFormField(
               validator: (value) {
-                if (value!.isEmpty || !value.contains("@")) {
+                if (value!.isEmpty || value.length<11) {
                   return 'Add a valid email ';
                 } else {
                   return null;
