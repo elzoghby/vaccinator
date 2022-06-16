@@ -62,7 +62,7 @@ class MyApp extends StatelessWidget {
 
             builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
                 if(snapshot.hasData ) {
-                  return AddProduct();
+                  return Home();
                 } else {
                   return SignUpScreen();
                 }

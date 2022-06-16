@@ -33,22 +33,25 @@ class _AddProductState extends State<AddProduct> {
 
   void scheduleAlarm() async {
     var androidPlatformChannelSpecifics = AndroidNotificationDetails(
-      'alarm_notif',
+      'alarm_notif3',
 
-      'Channel for Alarm notification',
-      icon: 'alarm',
-     // sound: RawResourceAndroidNotificationSound('a_long_cold_sting'),
-      importance: Importance.max,
+      'Channel for Alarm notificationa',
+      icon: 'alarm',fullScreenIntent: true,
+      sound: RawResourceAndroidNotificationSound('alarm_song'),
+      importance: Importance.max,visibility:NotificationVisibility.public,
+      priority: Priority.max,
+
+      //styleInformation: BigPictureStyleInformation(),
       largeIcon: DrawableResourceAndroidBitmap('alarm'),
     );
 
-    var iOSPlatformChannelSpecifics = IOSNotificationDetails(
-      //  sound: 'a_long_cold_sting.wav',
-        presentAlert: true,
-        presentBadge: true,
-        presentSound: true);
+    // var iOSPlatformChannelSpecifics = IOSNotificationDetails(
+    //   //  sound: 'a_long_cold_sting.wav',
+    //     presentAlert: true,
+    //     presentBadge: true,
+    //     presentSound: true);
     var platformChannelSpecifics = NotificationDetails(
-        android: androidPlatformChannelSpecifics, iOS: iOSPlatformChannelSpecifics);
+        android: androidPlatformChannelSpecifics, );
 
     await flutterLocalNotificationsPlugin.schedule(0, 'Office', 'title',
         DateTime.now().add(const Duration(seconds: 5)), platformChannelSpecifics, androidAllowWhileIdle: true,);

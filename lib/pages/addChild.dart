@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'dart:io';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
@@ -8,6 +9,7 @@ import 'package:vaccinator/models/child_vaccine.dart';
 import 'package:vaccinator/pages/missed_vaccine_status_screen.dart';
 import 'package:vaccinator/providers/child_vaccine_provider.dart';
 
+import '../main.dart';
 import '../models/child.dart';
 import '../models/event.dart';
 import '../models/vaccine.dart';
@@ -24,8 +26,9 @@ String name = "";
 DateTime? dob;
 String? formattedDate;
 int gender = -1;
-String ?service;
-List<String>servicesList=['home service','hospital'];
+String? service;
+List<String> servicesList = ['home service', 'hospital'];
+
 class AddChild extends StatefulWidget {
   @override
   _AddChildState createState() => _AddChildState();
@@ -40,6 +43,44 @@ class _AddChildState extends State<AddChild> {
 // Take Image from gallery
 
   // Show Picker
+  void scheduleAlarm(
+      {required String vaccineName,
+      required String service,
+      required DateTime time}) async {
+    var androidPlatformChannelSpecifics = AndroidNotificationDetails(
+      'alarm_notif3',
+
+      'Channel for Alarm notificationa',
+      icon: 'alarm',
+      fullScreenIntent: true,
+      sound: RawResourceAndroidNotificationSound('alarm_song'),
+      importance: Importance.max,
+      visibility: NotificationVisibility.public,
+      priority: Priority.max,
+
+      //styleInformation: BigPictureStyleInformation(),
+      largeIcon: DrawableResourceAndroidBitmap('alarm'),
+    );
+
+    // var iOSPlatformChannelSpecifics = IOSNotificationDetails(
+    //   //  sound: 'a_long_cold_sting.wav',
+    //     presentAlert: true,
+    //     presentBadge: true,
+    //     presentSound: true);
+    var platformChannelSpecifics = NotificationDetails(
+      android: androidPlatformChannelSpecifics,
+    );
+
+    await flutterLocalNotificationsPlugin.schedule(
+      0,
+      vaccineName,
+      service,
+      time,
+      platformChannelSpecifics,
+      androidAllowWhileIdle: true,
+    );
+  }
+
   getVaccines(DateTime birth, Child child) async {
     DateDuration age = AgeCalculator.age(birth);
 
@@ -55,54 +96,56 @@ class _AddChildState extends State<AddChild> {
 
     List<Vaccine> vaccines =
         Provider.of<Vaccines>(context, listen: false).vaccines;
-    int order=0;
-    for (int i=0 ;i< vaccines.length;i++) {
+    int order = 0;
+    for (int i = 0; i < vaccines.length; i++) {
       if (DateTime.now().isAfter(birth.add(Duration(
-        days: vaccines[i].day + (vaccines[i].month * 30) + (vaccines[i].year * 365),
+        days: vaccines[i].day +
+            (vaccines[i].month * 30) +
+            (vaccines[i].year * 365),
       )))) {
-        // goneVaccines.add(ChildVaccine(
-        //     childName: child.name, vaccine: vaccines[i].name, status: 1));
-        Provider.of<ChildVaccinesProvider>(context, listen: false)
-            .missedVaccines
-            .add(ChildVaccine(
-            childName: child.name, vaccine: vaccines[i].name, status: 1));
-        print(Provider.of<ChildVaccinesProvider>(context, listen: false)
-            .missedVaccines.length.toString()+'      llllllllllllllllllllllllllllllllll');
+         goneVaccines.add(ChildVaccine(
+           childName: child.name, vaccine: vaccines[i].name, status: 1));
+
       } else {
-
-          Event event = Event(
+        Event event = Event(
             order: order,
-             childName: child.name,
-         childId: child.id,
-             date: birth.add(Duration(
-              days: vaccines[i].day + (vaccines[i].month * 30) + (vaccines[i].year * 365),
-             )),
+            childName: child.name,
+            childId: child.id,
+            date: birth.add(Duration(
+              days: vaccines[i].day +
+                  (vaccines[i].month * 30) +
+                  (vaccines[i].year * 365),
+            )),
             vaccineName: vaccines[i].name);
-         await Provider.of<EventProvider>(context, listen: false)
+        await Provider.of<EventProvider>(context, listen: false)
             .addEvent(event);
-         order++;
-         // await Provider.of<ChildVaccinesProvider>(context, listen: false)
-         // .addChildVaccine(child.id, ChildVaccine(
-         //   childName: child.name, vaccine: vaccines[i].name, status: 0));
-
+        order++;
+        // await Provider.of<ChildVaccinesProvider>(context, listen: false)
+        // .addChildVaccine(child.id, ChildVaccine(
+        //   childName: child.name, vaccine: vaccines[i].name, status: 0));
+        scheduleAlarm(
+          vaccineName: vaccines[i].name,
+          service: child.service,
+          time: birth.add(Duration(
+            days: vaccines[i].day +
+                (vaccines[i].month * 30) +
+                (vaccines[i].year * 365),
+          )),
+        );
       }
-      // await Provider.of<ChildVaccinesProvider>(context, listen: false)
-      //     .addAllChildVaccine(child.id, nextVaccines);
-      // Provider.of<ChildVaccinesProvider>(context, listen: false)
-      //     .missedVaccines
-      //     .addAll(goneVaccines);
 
-      // _goToSelectReminders(context, newChild);
+      if(goneVaccines.isNotEmpty) {
+        await Provider.of<ChildVaccinesProvider>(context,listen : false).addAllChildVaccine(child.id, goneVaccines);
+      }
 
     }
-
 
     Navigator.push(
         context,
         MaterialPageRoute(
             builder: (context) => MissedVaccineScreen(
-              id: child.id,
-            )));
+                  id: child.id,
+                )));
   }
 
   // Widget for Child Name
@@ -146,7 +189,7 @@ class _AddChildState extends State<AddChild> {
     return SafeArea(
       child: Scaffold(
           body: SingleChildScrollView(
-            physics: BouncingScrollPhysics(),
+        physics: BouncingScrollPhysics(),
         child: Container(
           padding: EdgeInsets.only(top: 50),
           child: Form(
@@ -189,7 +232,6 @@ class _AddChildState extends State<AddChild> {
                             padding: const EdgeInsets.all(8.0),
                             child: Text(dob == null ? "" : formattedDate!),
                           ),
-
                           ElevatedButton(
                             style: ElevatedButton.styleFrom(
                               primary: Colors.green, // background
@@ -253,9 +295,10 @@ class _AddChildState extends State<AddChild> {
                         ],
                       ),
                     ),
-                    Text('Choose service', style: TextStyle(color: Colors.red,fontSize: 18.sp)),
+                    Text('Choose service',
+                        style: TextStyle(color: Colors.red, fontSize: 18.sp)),
                     Padding(
-                      padding:  EdgeInsets.all(3.w),
+                      padding: EdgeInsets.all(3.w),
                       child: Row(
                         children: [
                           Text(service != null ? '' : 'Hospital'),
@@ -278,20 +321,22 @@ class _AddChildState extends State<AddChild> {
                               },
                               items: servicesList
                                   .map((value) => DropdownMenuItem(
-                                child: Text(value),
-                                value: value,
-                              ))
+                                        child: Text(value),
+                                        value: value,
+                                      ))
                                   .toList(),
                             ),
                           ),
                         ],
                       ),
                     ),
-                    SizedBox(height: 1.h,),
-                    if(service==servicesList[0])
-                      Text('Home service will cost you 15\$', style: TextStyle(color: Colors.red,fontSize: 18.sp)),
+                    SizedBox(
+                      height: 1.h,
+                    ),
+                    if (service == servicesList[0])
+                      Text('Home service will cost you 15\$',
+                          style: TextStyle(color: Colors.red, fontSize: 18.sp)),
                   ])),
-
 
               // Next button - transfer the information
               Padding(
@@ -303,18 +348,25 @@ class _AddChildState extends State<AddChild> {
                   ),
                   onPressed: () async {
                     _formKey.currentState!.save();
-                    if (dob == null || gender == -1 || name == ""||service!.isEmpty) {
+                    if (dob == null ||
+                        gender == -1 ||
+                        name == "" ||
+                        service!.isEmpty) {
                       setState(() {
                         showError = true;
                       });
                       return;
                     }
                     showError = false;
-                    Child newChild = Child(service: service!,
-                        id: kidId, name: name, gender: gender, birthDay: dob!);
-                     await Provider.of<ChildrenProvider>(context, listen: false)
-                       .addChild(newChild);
-                     getVaccines(dob!, newChild);
+                    Child newChild = Child(
+                        service: service!,
+                        id: kidId,
+                        name: name,
+                        gender: gender,
+                        birthDay: dob!);
+                    await Provider.of<ChildrenProvider>(context, listen: false)
+                        .addChild(newChild);
+                    getVaccines(dob!, newChild);
                   },
                   icon: Icon(Icons.arrow_forward_sharp),
                   label: Text(""),

@@ -22,7 +22,6 @@ return null;
 }
 
   addAllChildVaccine(String id,List<ChildVaccine> history)async{
-
     await DatabaseMethods().addAllVaccinationHistory(id, history);
     allChildrenVaccines.addAll(history);
 

@@ -1,5 +1,6 @@
 
 import 'package:flutter/material.dart';
+import 'package:vaccinator/models/child_vaccine.dart';
 import 'package:vaccinator/services/database_methods.dart';
 
 import '../models/event.dart';
@@ -31,6 +32,8 @@ List <Event>allEvents=[];
     for (Event event in allEvents){
       if(DateTime.now().isAfter(event.date)){
         await DatabaseMethods().deleteGone(event.date);
+        ChildVaccine childVaccine=ChildVaccine(childName: event.childName, vaccine: event.vaccineName);
+        await DatabaseMethods().addVaccinationHistory(event.childId,childVaccine);
       }
     }
   }
