@@ -22,6 +22,8 @@ import 'package:age_calculator/age_calculator.dart';
 import 'package:uuid/uuid.dart';
 
 String name = "";
+String address='';
+String phone='';
 
 DateTime? dob;
 String? formattedDate;
@@ -48,12 +50,12 @@ class _AddChildState extends State<AddChild> {
       required String service,
       required DateTime time}) async {
     var androidPlatformChannelSpecifics = AndroidNotificationDetails(
-      'alarm_notif3',
+      'alarm_notif5',
 
       'Channel for Alarm notificationa',
       icon: 'alarm',
       fullScreenIntent: true,
-      sound: RawResourceAndroidNotificationSound('alarm_song'),
+      sound: RawResourceAndroidNotificationSound('timer'),
       importance: Importance.max,
       visibility: NotificationVisibility.public,
       priority: Priority.max,
@@ -149,13 +151,14 @@ class _AddChildState extends State<AddChild> {
   }
 
   // Widget for Child Name
-  Widget _buildName() {
+  Widget _buildName(String name) {
+
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: TextFormField(
-          key: Key("ChildName"),
+
           cursorColor: Colors.black,
-          decoration: InputDecoration(labelText: "Child Name"),
+          decoration: InputDecoration(labelText: name),
           onSaved: (value) {
             name = value!;
           }),
@@ -217,7 +220,16 @@ class _AddChildState extends State<AddChild> {
                     borderRadius: BorderRadius.circular(30),
                   ),
                   child: Column(children: <Widget>[
-                    _buildName(),
+                    Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: TextFormField(
+
+                          cursorColor: Colors.black,
+                          decoration: InputDecoration(labelText: name),
+                          onSaved: (value) {
+                            name = value!;
+                          }),
+                    ),
                     // Add date of birth through scrollable sat picker
                     Padding(
                       padding: const EdgeInsets.all(15.0),
@@ -336,6 +348,29 @@ class _AddChildState extends State<AddChild> {
                     if (service == servicesList[0])
                       Text('Home service will cost you 15\$',
                           style: TextStyle(color: Colors.red, fontSize: 18.sp)),
+                    if(service == servicesList[0])
+                      Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: TextFormField(
+
+                            cursorColor: Colors.black,
+                            decoration: InputDecoration(labelText: name),
+                            onSaved: (value) {
+                              address = value!;
+                            }),
+                      ),
+                    if(service == servicesList[0])
+                      Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: TextFormField(
+
+                            cursorColor: Colors.black,
+
+                            decoration: InputDecoration(labelText: name),
+                            onSaved: (value) {
+                              phone = value!;
+                            }),
+                      )
                   ])),
 
               // Next button - transfer the information

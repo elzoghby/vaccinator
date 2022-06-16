@@ -13,6 +13,7 @@ import 'package:vaccinator/pages/home.dart';
 import 'package:vaccinator/pages/home.dart';
 
 import 'package:vaccinator/pages/signUp_screen.dart';
+import 'package:vaccinator/pages/splash.dart';
 import 'package:vaccinator/pages/vaccines_screen/vaccines_screen.dart';
 import 'package:vaccinator/providers/child_vaccine_provider.dart';
 import 'package:vaccinator/providers/childern_provider.dart';
@@ -57,17 +58,7 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
 
           title: 'VACCINATOR',
-          home: ResponsiveSizer(builder: (context, orientation, deviceType)=>StreamBuilder(
-            stream: FirebaseAuth.instance.authStateChanges(),
-
-            builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
-                if(snapshot.hasData ) {
-                  return Home();
-                } else {
-                  return SignUpScreen();
-                }
-
-          },)),
+          home: ResponsiveSizer(builder: (context, orientation, deviceType)=>Splash()),
           debugShowCheckedModeBanner: false,
 
           routes: {

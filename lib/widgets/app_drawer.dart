@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:vaccinator/pages/signUp_screen.dart';
+import 'package:vaccinator/pages/splash.dart';
 import 'package:vaccinator/pages/vaccines_screen/vaccines_screen.dart';
 
 import '../pages/about_screen.dart';
@@ -30,12 +31,30 @@ class AppDrawer extends StatelessWidget {
             },
           ),
           ListTile(
+            leading: Icon(Icons.message_outlined),
+            title: Text('about us'),
+            onTap: () {
+              //FirebaseAuth.instance.signOut();
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => AboutScreen()));
+            },
+          ),
+          ListTile(
+            leading: Icon(Icons.people_sharp),
+            title: Text('about us'),
+            onTap: () {
+              //FirebaseAuth.instance.signOut();
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => AboutScreen()));
+            },
+          ),
+          ListTile(
             leading: Icon(Icons.logout),
             title: Text('Logout'),
             onTap: () {
-              //FirebaseAuth.instance.signOut();
+              FirebaseAuth.instance.signOut();
               Navigator.pushReplacement(context,
-                  MaterialPageRoute(builder: (context) => AboutScreen()));
+                  MaterialPageRoute(builder: (context) => Splash()));
             },
           ),
         ],
